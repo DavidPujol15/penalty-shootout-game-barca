@@ -166,7 +166,7 @@ function kick(el, et) {
 	
 	// Load sprite sheet
 	playerImage.addEventListener("load", gameLoop);
-	playerImage.src = "img/slow-kick-right.png";
+	playerImage.src = "img/barçaplayer.png";
 	
 }
 
