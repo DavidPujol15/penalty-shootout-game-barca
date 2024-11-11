@@ -216,7 +216,7 @@ function moveBall(el, et) {
 	      if (chanceCount < 4) {modalElem5.setAttribute("class","modal active");}
 	      else {
 	        if (score > 4) {modalElem7.setAttribute("class","modal active");}
-	        else {modalElem6.innerHTML = "You scored " + score + " goal(s) out of 5. Click to try again";
+	        else {modalElem6.innerHTML = "Has marcat " + score + " gol(s) de 5. Fes click una altre vegada";
 	              modalElem6.setAttribute("class","modal active");}
 	      }
 	    }
@@ -226,14 +226,14 @@ function moveBall(el, et) {
 	      if (chanceCount < 4) {modalElem5.setAttribute("class","modal active");}
 	      else {
 	        if (score > 4) {modalElem7.setAttribute("class","modal active");}
-	        else {modalElem6.innerHTML = "You scored " + score + " goal(s) out of 5. Click to try again";
+	        else {modalElem6.innerHTML = "Has marcat " + score + " gol(s) de 5. Fes click una altre vegada";
 	              modalElem6.setAttribute("class","modal active");}
 	      }
 	    }
 	    else {
 	      if (chanceCount < 4) {modalElem4.setAttribute("class","modal active");}
 	      else {
-	        modalElem6.innerHTML = "You scored " + score + " goal(s) out of 5. Click to try again";
+	        modalElem6.innerHTML = "Has marcat " + score + " gol(s) de 5. Fes click una altre vegada";
 	        modalElem6.setAttribute("class","modal active");
 	      }
 	    }
@@ -241,7 +241,7 @@ function moveBall(el, et) {
 	  else {
 	      if (chanceCount < 4) {modalElem4.setAttribute("class","modal active");}
 	      else {
-	        modalElem6.innerHTML = "You scored " + score + " goal(s) out of 5. Click to try again";
+	        modalElem6.innerHTML = "Has marcat " + score + " gol(s) de 5. Fes click una altre vegada";
 	        modalElem6.setAttribute("class","modal active");
 	      }
 	  }
