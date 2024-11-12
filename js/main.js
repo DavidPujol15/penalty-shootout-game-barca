@@ -64,6 +64,14 @@ var thisTel;
 var thisEmail;
 var thisCity;
 
+var states = {
+  VERTICAL: 0, 
+  HORIZONTAL: 1,
+  POWER: 2,
+  SHOT: 3
+}
+var state = states.VERTICAL;
+
 function kick(el, et) {
   
 	var player,
@@ -250,6 +258,7 @@ function moveBall(el, et) {
 
 // to osciallte the vertical direction indicator
 function moveVerticalSmallBall() {
+  if (state != states.VERTICAL) return;
   var thing = document.getElementById('vertical-direction-indicator');
   if (thing.getAttribute('class') == "small-ball one-end") {
     thing.setAttribute('class','small-ball other-end');
@@ -263,6 +272,7 @@ var verticalIndicatorOscillate = window.setInterval(moveVerticalSmallBall, 320);
 
 // to osciallte the horizontal direction indicator
 function moveHorizontalSmallBall() {
+  if (state != states.HORIZONTAL) return;
   var thing = document.getElementById('horizontal-direction-indicator');
   if (thing.getAttribute('class') == "small-ball one-end") {
     thing.setAttribute('class','small-ball other-end');
@@ -276,6 +286,7 @@ var verticalIndicatorOscillate = window.setInterval(moveHorizontalSmallBall, 320
 
 // to osciallte the vertical direction indicator
 function movePowerSmallBall() {
+  if (state != states.POWER) return;
   var thing = document.getElementById('power-level-indicator');
   if (thing.getAttribute('class') == "small-ball one-end") {
     thing.setAttribute('class','small-ball other-end');
@@ -324,6 +335,7 @@ function stopVerticalBall() {
       element.setAttribute("class", "small-ball");
       element.style.top = top;
       verticalBallStopped = true;
+      state = states.HORIZONTAL;
 }
 
 function stopHorizontalBall() {
@@ -337,6 +349,7 @@ function stopHorizontalBall() {
       element.setAttribute("class", "small-ball");
       element.style.left = left;
       horizontalBallStopped = true;
+      state = states.POWER;
 }
 
 function stopPowerBallAndKick() {
@@ -367,6 +380,7 @@ function stopPowerBallAndKick() {
       // let the player kick the ball now!
       console.log(stringEl + " " + stringEt);
       kick(stringEl, stringEt)
+      state = states.SHOT;
 }
 
 function kickingProcess() {
@@ -397,6 +411,7 @@ function kickingProcess() {
       modalElem6.setAttribute('class','modal');
       modalElem7.setAttribute('class','modal');
       refreshScene();
+      state = states.VERTICAL;
     }
 }
 
