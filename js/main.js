@@ -179,20 +179,17 @@ function kick(el, et) {
 }
 
 function keeperJump() {
-                    var randomBinary = Math.floor(Math.random()*2);
-                    var someTimeAfter = window.setTimeout(function() {
-                      if ((randomBinary == 0) && (x3 >= 0.55)) {
-                    document.getElementById('goal-keeper-state-1').style.display = "none";
-                        document.getElementById('goal-keeper-state-2').style.display = "block";
-                        direction = "left";
-                      }
-                      else if ((randomBinary == 1) && (x3 >= 0.55)) {
-                    document.getElementById('goal-keeper-state-1').style.display = "none";
-                        document.getElementById('goal-keeper-state-3').style.display = "block";
-                        direction = "right";
-                      }
-                    }, 0);
+  const randomDirection = Math.random() < 0.5 ? "left" : "right";
+
+  if (x3 < 0.55) return; // Exit if x3 condition isn't met
+
+  window.setTimeout(() => {
+    document.getElementById('goal-keeper-state-1').style.display = "none";
+    document.getElementById(`goal-keeper-state-${randomDirection === "left" ? 2 : 3}`).style.display = "block";
+    direction = randomDirection;
+  }, 0);
 }
+
 
 function moveBall(el, et) {
   var path = "M " + "390" + "," + "440" + " "+ el + "," + et; // Ml Mt Ql Qt El Et " Q " + "460" + "," + "340" + 
@@ -215,114 +212,88 @@ function moveBall(el, et) {
 								  "-webkit-transform:rotate("+ angle +"deg);";
   }
   
-  function finish(){
-	  // see if the ball has reached the goal
-	  if ((endTop >= 98)&&(endTop <= 292)&&(endLeft >= 114)&&(endLeft <= 710)) {
-	    if ((direction == "right")&&(endLeft < 362)) {
-	      // increase the score and indicate it on the score board
-	      incrementScore();
-	      if (chanceCount < 4) {modalElem5.setAttribute("class","modal active");}
-	      else {
-	        if (score > 4) {modalElem7.setAttribute("class","modal active");}
-	        else {modalElem6.innerHTML = "Has marcat " + score + " gol(s) de 5. Fes click una altre vegada";
-	              modalElem6.setAttribute("class","modal active");}
-	      }
-	    }
-	    else if ((direction == "left")&&(endLeft >= 362)) {
-	      // increase the score and indicate it on the score board
-	      incrementScore();
-	      if (chanceCount < 4) {modalElem5.setAttribute("class","modal active");}
-	      else {
-	        if (score > 4) {modalElem7.setAttribute("class","modal active");}
-	        else {modalElem6.innerHTML = "Has marcat " + score + " gol(s) de 5. Fes click una altre vegada";
-	              modalElem6.setAttribute("class","modal active");}
-	      }
-	    }
-	    else {
-	      if (chanceCount < 4) {modalElem4.setAttribute("class","modal active");}
-	      else {
-	        modalElem6.innerHTML = "Has marcat " + score + " gol(s) de 5. Fes click una altre vegada";
-	        modalElem6.setAttribute("class","modal active");
-	      }
-	    }
-	  }
-	  else {
-	      if (chanceCount < 4) {modalElem4.setAttribute("class","modal active");}
-	      else {
-	        modalElem6.innerHTML = "Has marcat " + score + " gol(s) de 5. Fes click una altre vegada";
-	        modalElem6.setAttribute("class","modal active");
-	      }
-	  }
+  function finish() {
+    const isGoal = (endTop >= 98 && endTop <= 292 && endLeft >= 114 && endLeft <= 710);
+    const isSuccessfulRightGoal = (direction === "right" && endLeft < 362);
+    const isSuccessfulLeftGoal = (direction === "left" && endLeft >= 362);
+
+    if (isGoal && (isSuccessfulRightGoal || isSuccessfulLeftGoal)) {
+      incrementScore();
+      showModalBasedOnScore(modalElem5, modalElem7, modalElem6);
+    } else {
+      showMissModal(modalElem4, modalElem6);
+    }
   }
+
+  function showModalBasedOnScore(successModal, highScoreModal, tryAgainModal) {
+    if (chanceCount < 4) {
+      successModal.setAttribute("class", "modal active");
+    } else {
+      const message = score > 4 ? highScoreModal : tryAgainModal;
+      message.innerHTML = `Has marcat ${score} gol(s) de 5. Fes click una altre vegada`;
+      message.setAttribute("class", "modal active");
+    }
+  }
+
+  function showMissModal(missModal, tryAgainModal) {
+    if (chanceCount < 4) {
+      missModal.setAttribute("class", "modal active");
+    } else {
+      tryAgainModal.innerHTML = `Has marcat ${score} gol(s) de 5. Fes click una altre vegada`;
+      tryAgainModal.setAttribute("class", "modal active");
+    }
+  }
+
 }
 
 // to osciallte the vertical direction indicator
-function moveVerticalSmallBall() {
-  if (state != states.VERTICAL) return;
-  var thing = document.getElementById('vertical-direction-indicator');
-  if (thing.getAttribute('class') == "small-ball one-end") {
-    thing.setAttribute('class','small-ball other-end');
-  }
-  else if (thing.getAttribute('class') == "small-ball other-end") {
-    thing.setAttribute('class','small-ball one-end');
-  }
+function oscillateSmallBall(indicatorId, requiredState) {
+  if (state !== requiredState) return;
+
+  const indicator = document.getElementById(indicatorId);
+  const currentClass = indicator.getAttribute('class');
+  const newClass = currentClass === 'small-ball one-end' ? 'small-ball other-end' : 'small-ball one-end';
+  indicator.setAttribute('class', newClass);
 }
 
-var verticalIndicatorOscillate = window.setInterval(moveVerticalSmallBall, 320);
+const verticalIndicatorOscillate = window.setInterval(() => oscillateSmallBall('vertical-direction-indicator', states.VERTICAL), 320);
+const horizontalIndicatorOscillate = window.setInterval(() => oscillateSmallBall('horizontal-direction-indicator', states.HORIZONTAL), 320);
+const powerLevelOscillate = window.setInterval(() => oscillateSmallBall('power-level-indicator', states.POWER), 320);
 
-// to osciallte the horizontal direction indicator
-function moveHorizontalSmallBall() {
-  if (state != states.HORIZONTAL) return;
-  var thing = document.getElementById('horizontal-direction-indicator');
-  if (thing.getAttribute('class') == "small-ball one-end") {
-    thing.setAttribute('class','small-ball other-end');
-  }
-  else if (thing.getAttribute('class') == "small-ball other-end") {
-    thing.setAttribute('class','small-ball one-end');
-  }
-}
-
-var verticalIndicatorOscillate = window.setInterval(moveHorizontalSmallBall, 320);
-
-// to osciallte the vertical direction indicator
-function movePowerSmallBall() {
-  if (state != states.POWER) return;
-  var thing = document.getElementById('power-level-indicator');
-  if (thing.getAttribute('class') == "small-ball one-end") {
-    thing.setAttribute('class','small-ball other-end');
-  }
-  else if (thing.getAttribute('class') == "small-ball other-end") {
-    thing.setAttribute('class','small-ball one-end');
-  }
-}
-
-var powerLevelOscillate = window.setInterval(movePowerSmallBall, 320);
 
 function refreshScene() {
-  // stop the meters
-  document.getElementById('vertical-direction-indicator').setAttribute('style','')
-  document.getElementById('vertical-direction-indicator').setAttribute('class','small-ball one-end');
-  document.getElementById('horizontal-direction-indicator').setAttribute('style','')
-  document.getElementById('horizontal-direction-indicator').setAttribute('class','small-ball one-end');
-  document.getElementById('power-level-indicator').setAttribute('style','')
-  document.getElementById('power-level-indicator').setAttribute('class','small-ball one-end');
-  verticalBallStopped = false;
-  horizontalBallStopped = false;
-  powerBallStopped = false;
-  
-  // stop the ball
-  document.getElementById('zee-ball').setAttribute('style','')
-  document.getElementById('zee-ball').setAttribute('class','');
-  
-  // clear the canvas or in other words, make the player vanish
-  var contextForNow = document.getElementById('kickAnimation').getContext('2d');
-  contextForNow.clearRect(0,0,150,270);
-  
-  // reset position of the goal keeper
+  resetIndicators(['vertical-direction-indicator', 'horizontal-direction-indicator', 'power-level-indicator']);
+  verticalBallStopped = horizontalBallStopped = powerBallStopped = false;
+
+  // Reset ball
+  resetElementStyle('zee-ball', '', '');
+
+  // Clear the canvas to make the player vanish
+  const context = document.getElementById('kickAnimation').getContext('2d');
+  context.clearRect(0, 0, 150, 270);
+
+  // Reset goal keeper position
+  resetGoalKeeper();
+}
+
+function resetIndicators(indicators) {
+  indicators.forEach(id => {
+    resetElementStyle(id, '', 'small-ball one-end');
+  });
+}
+
+function resetElementStyle(elementId, style, className) {
+  const element = document.getElementById(elementId);
+  element.setAttribute('style', style);
+  element.setAttribute('class', className);
+}
+
+function resetGoalKeeper() {
+  document.getElementById('goal-keeper-state-1').style.display = "block";
   document.getElementById('goal-keeper-state-2').style.display = "none";
   document.getElementById('goal-keeper-state-3').style.display = "none";
-  document.getElementById('goal-keeper-state-1').style.display = "block";
 }
+
 
 function stopVerticalBall() {
       var element = document.getElementById('vertical-direction-indicator'),
@@ -353,90 +324,71 @@ function stopHorizontalBall() {
 }
 
 function stopPowerBallAndKick() {
-      // get position of the small ball
-      var element = document.getElementById('power-level-indicator'),
-        style = window.getComputedStyle(element),
-        right = style.getPropertyValue('right');
-      x3 = parseInt(right.substring(0,3), 10);
-      x3 = (191-x3)/121;
-      console.log(x3);
-      
-      // fix the position of the small ball to wherever it is
-      element.setAttribute("class", "small-ball");
-      element.style.right = right;
-      powerBallStopped = true;
-      
-      // Calculate the ending position of the ball
-      var Et, El, Qt, Ql;
-      Et = 440 - ((0.8 + x1)/1.8)*x3*440 + 0.3*x3*((Math.abs(0.5-x2))/0.5)*440;
-      var stringEt = Et.toString(10);
-      El = 405 + x3*(x2-0.5)*810
-      var stringEl = El.toString(10);
-                      
-      // ending co-ordinates of the ball
-      endTop = Et;
-      endLeft = El;
-      
-      // let the player kick the ball now!
-      console.log(stringEl + " " + stringEt);
-      kick(stringEl, stringEt)
-      state = states.SHOT;
+  const element = document.getElementById('power-level-indicator');
+  const right = parseInt(window.getComputedStyle(element).getPropertyValue('right').substring(0, 3), 10);
+
+  x3 = (191 - right) / 121;
+  console.log(x3);
+
+  // Fix the small ball position
+  element.setAttribute("class", "small-ball");
+  element.style.right = `${right}px`;
+  powerBallStopped = true;
+
+  // Calculate the ending position of the ball
+  const Et = 440 - ((0.8 + x1) / 1.8) * x3 * 440 + 0.3 * x3 * ((Math.abs(0.5 - x2)) / 0.5) * 440;
+  const El = 405 + x3 * (x2 - 0.5) * 810;
+
+  // Set ending coordinates of the ball
+  endTop = Et;
+  endLeft = El;
+
+  // Kick the ball
+  console.log(`${El} ${Et}`);
+  kick(El.toString(), Et.toString());
+  state = states.SHOT;
 }
 
 function kickingProcess() {
-    if ((verticalBallStopped == false) && (horizontalBallStopped == false) && (powerBallStopped == false)) {
-      stopVerticalBall();
+  if (!verticalBallStopped && !horizontalBallStopped && !powerBallStopped) {
+    stopVerticalBall();
+  } else if (verticalBallStopped && !horizontalBallStopped && !powerBallStopped) {
+    stopHorizontalBall();
+  } else if (verticalBallStopped && horizontalBallStopped && !powerBallStopped) {
+    stopPowerBallAndKick();
+  } else if (verticalBallStopped && horizontalBallStopped && powerBallStopped) {
+    if (chanceCount < 4) {
+      chanceCount++;
+    } else {
+      resetScoreBoard();
+      chanceCount = 0;
+      score = 0;
     }
-    else if ((verticalBallStopped == true) && (horizontalBallStopped == false) && (powerBallStopped == false)) {
-      stopHorizontalBall();
-    }
-    else if ((verticalBallStopped == true) && (horizontalBallStopped == true) && (powerBallStopped == false)) {
-      stopPowerBallAndKick();
-    }
-    else if ((verticalBallStopped == true) && (horizontalBallStopped == true) && (powerBallStopped == true)) {
-      if (chanceCount < 4) {
-        chanceCount += 1;
-      }
-      else {
-        chanceCount = 0;
-        score = 0;
-        document.getElementById('score-board').getElementsByTagName('li')[0].setAttribute('class', '');
-        document.getElementById('score-board').getElementsByTagName('li')[1].setAttribute('class', '');
-        document.getElementById('score-board').getElementsByTagName('li')[2].setAttribute('class', '');
-        document.getElementById('score-board').getElementsByTagName('li')[3].setAttribute('class', '');
-        document.getElementById('score-board').getElementsByTagName('li')[4].setAttribute('class', '');
-      }
-      modalElem4.setAttribute("class","modal");
-      modalElem5.setAttribute("class","modal");
-      modalElem6.setAttribute('class','modal');
-      modalElem7.setAttribute('class','modal');
-      refreshScene();
-      state = states.VERTICAL;
-    }
+    closeModals();
+    refreshScene();
+    state = states.VERTICAL;
+  }
 }
 
+function resetScoreBoard() {
+  const scoreBoardItems = document.getElementById('score-board').getElementsByTagName('li');
+  Array.from(scoreBoardItems).forEach(item => item.setAttribute('class', ''));
+}
+
+function closeModals() {
+  [modalElem4, modalElem5, modalElem6, modalElem7].forEach(modal => {
+    modal.setAttribute("class", "modal");
+  });
+}
+
+
 function incrementScore() {
-  if ((chanceCount == 0)) {
-      document.getElementById('score-board').getElementsByTagName('li')[0].setAttribute('class', 'scored');
-      score += 1;
-  }
-  else if ((chanceCount == 1)) {
-      document.getElementById('score-board').getElementsByTagName('li')[1].setAttribute('class', 'scored');
-      score += 1;
-  }
-  else if ((chanceCount == 2)) {
-      document.getElementById('score-board').getElementsByTagName('li')[2].setAttribute('class', 'scored');
-      score += 1;
-  }
-  else if ((chanceCount == 3)) {
-      document.getElementById('score-board').getElementsByTagName('li')[3].setAttribute('class', 'scored');
-      score += 1;
-  }
-  else if ((chanceCount == 4)) {
-      document.getElementById('score-board').getElementsByTagName('li')[4].setAttribute('class', 'scored');
-      score += 1;
+  if (chanceCount >= 0 && chanceCount < 5) {
+    document.getElementById('score-board').getElementsByTagName('li')[chanceCount].setAttribute('class', 'scored');
+    score += 1;
   }
 }
+
 
 // =======================================================================================================
 
