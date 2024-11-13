@@ -253,13 +253,21 @@ body {
   float: left;
   margin-right: 6px;
   zoom: 1;
-	filter: alpha(opacity=56);
+  filter: brightness(0);
 	opacity: 0.56;
 }
 
 #score-board li.scored {
   zoom: 1;
 	filter: alpha(opacity=100);
+  filter: brightness(1);
+	opacity: 1;
+}
+
+#score-board li.missed {
+  zoom: 1;
+	filter: alpha(opacity=56);
+  filter: sepia(1) hue-rotate(-60deg) saturate(6) brightness(0.7);
 	opacity: 1;
 }
 

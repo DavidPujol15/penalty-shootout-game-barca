@@ -222,6 +222,7 @@ function moveBall(el, et) {
       showModalBasedOnScore(modalElem5, modalElem7, modalElem6);
     } else {
       showMissModal(modalElem4, modalElem6);
+      updateScoreOnMiss();
     }
   }
 
@@ -386,6 +387,12 @@ function incrementScore() {
   if (chanceCount >= 0 && chanceCount < 5) {
     document.getElementById('score-board').getElementsByTagName('li')[chanceCount].setAttribute('class', 'scored');
     score += 1;
+  }
+}
+
+function updateScoreOnMiss() {
+  if (chanceCount >= 0 && chanceCount < 5) {
+    document.getElementById('score-board').getElementsByTagName('li')[chanceCount].setAttribute('class', 'missed');
   }
 }
 
